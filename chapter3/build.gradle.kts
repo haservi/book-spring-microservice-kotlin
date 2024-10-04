@@ -27,7 +27,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // https://mvnrepository.com/artifact/org.springframework.hateoas/spring-hateoas
     implementation("org.springframework.hateoas:spring-hateoas:2.3.3")
-
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
+    implementation("org.springframework.boot:spring-boot-starter-actuator:3.3.4")
 }
 
 kotlin {

@@ -21,23 +21,18 @@ class LicenseService(private val message: MessageSource) {
     }
 
     fun createLicense(license: License?, organizationId: String, locale: Locale): String? {
-        return license?.let {
-            it.organizationId = organizationId
-            String.format(
-                message.getMessage("license.create.message", null, locale),
-                it.toString()
-            )
-        }
+        if (license == null) return null
+        license.licenseId = organizationId
+        return String.format(
+            message.getMessage("license.create.message", null, locale), license.toString()
+        )
     }
 
-    fun updateLicense(license: License?, organizationId: String, locale: Locale): String? {
-        return license?.let {
-            it.organizationId = organizationId
-            String.format(
-                message.getMessage("license.update.message", null, locale),
-                it.toString()
-            )
-        }
+    fun updateLicense(license: License, organizationId: String, locale: Locale): String? {
+        license.organizationId = organizationId
+        return String.format(
+            message.getMessage("license.update.message", null, locale), license.toString()
+        )
     }
 
     fun deleteLicense(licenseId: String, organizationId: String, locale: Locale): String {
