@@ -1,0 +1,25 @@
+version: '3'
+services:
+  app1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    container_name: app1-container
+    networks:
+      - chapter3
+
+  app2:
+    build:
+      context: .
+      dockerfile: Dockerfile.multi
+    ports:
+      - "8081:8080"
+    container_name: app2-container
+    networks:
+      - chapter3
+
+networks:
+  chapter3:
+    driver: bridge
