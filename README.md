@@ -13,6 +13,7 @@
     - [2장 스프링 클라우드와 함께 마이크로서비스 세계 탐험](#2장-스프링-클라우드와-함께-마이크로서비스-세계-탐험)
     - [3장 스프링 부트로 마이크로서비스 구축하기](#3장-스프링-부트로-마이크로서비스-구축하기)
     - [4장 도커](#4장-도커)
+    - [5장 스프링 클라우드 컨피그 서버로 구성 관리](#5장-스프링-클라우드-컨피그-서버로-구성-관리)
 
 ## 환경 및 설정
 
@@ -691,5 +692,89 @@ Dockerfile의 주요 명령어
 - --cpu: CPU 리소스 제한. 컨테이너가 사용할 수 있는 CPU 리소스를 제한(예: docker run --cpu-shares=512 myimage)
 - --memory or -m: 메모리 사용량 제한. 컨테이너가 사용할 수 있는 최대 메모리 용량을 설정(예: docker run -m 512m myimage)
 - --restart: 재시작 정책 설정. 컨테이너가 종료되었을 때 다시 시작할지 설정합니다.(예: docker run --restart always myimage)
+
+</details>
+
+### 5장 스프링 클라우드 컨피그 서버로 구성 관리
+
+<details open>
+<summary>내용 정리(펼치기)</summary>
+
+애플리케이션 구성 정보와 코드를 분리하는 것이 중요하며, 아래와 같이 구성 정보를 분리를 고려해야 합니다.
+
+- 배포되는 실제 코드와 구성 정보를 완전히 분리
+- 여러 환경에서도 절대 변경되지 않는 불변 애플리케이션 이미지를 빌드
+- 서버가 시작할 때 마이크로서비스가 읽어오는 환경 변수 또는 중앙 저장소를 통해 모든 애플리케이션 구성 정보를 주입
+
+5.1 구성(그리고 복잡성) 관리
+
+클라우드 마이크로서비스를 수동으로 구성하거나 건드릴 경우 구성 불일치나 예기치 않는 장애, 확장 문제 대응을 위한 지연 시간 등이 발생할 수 있습니다.
+
+이를 방지하기 위한 클라우드에서 마이크로서비스 구성 관리를 위한 4가지 원칙입니다.
+
+- 분리: 서비스의 물리적 배포에서 서비스 구성 정보를 완전히 분리해야 하며, 시작 중인 서비스에 환경 변수로 전달되거나 서비스가 시작할 때 중앙 저장소에서 읽어야 함
+- 추상화: 서비스 인터페이스 뒷단에 있는 구성 데이터의 접근 방식을 추상화해야 함. 서비스 저장소(파일 기반 또는 JDBC 데이터 베이스 기반)에서 직접 읽어 오는 코드를 작성하기보다 REST 기반 JSON
+  서비스를 사용 해야함
+- 중앙 집중화: 구성 데이터 저장소는 가능한 적은 수의 저장소로 애플리케이션 구성 정보를 모아야 함
+- 견고화: 애플리케이션 구성 정보는 배포되는 서비스와 완전히 분리되고 중앙 집중화되므로 사용하고 구현할 솔루션은 가용성이 높고 이중화가 필요
+
+애플리케이션 구성 데이터가 분리된 경우 외부 의존성이 생기므로 해당 구성 데이터는 추적 가능하고 버전을 제어할 수 있어야 함
+
+5.1.1 구성 관리 아키텍처
+
+5.2 스프링 클라우드 컨피그 서버 구축
+
+스프링 컨피그 서버 프로젝트 생성
+
+5.2.1 스프링 클라우드 컨피그 부트스트랩 클래스 설정
+
+`@EnableConfigServer` 애너테이션을 사용하여 해당 서비스를 스프링 클라우드 컨피그 서비스로 활성화합니다.
+
+5.2.2 스프링 클라우드 컨피그 서버에 파일 시스템 사용
+
+스프링 클라우드 native: 클라우드 컨피그 서버용으로만 생성한 프로파일이며, 구성 파일을 클래스 패스나 파일 시스템에서 검색하고 읽도록 지시하는 프로파일임
+
+spring.cloud.config.server 종류
+
+- native: 로컬 파일 시스템에서 파일 검색.
+- git: Git 리포지토리에서 파일 검색.
+- jdbc: 데이터베이스에서 파일 검색.
+- vault: HashiCorp Vault에서 비밀 값 검색.
+- consul: Consul에서 구성 값 검색.
+- zookeeper: Zookeeper에서 구성 값 검색.
+
+참조: [config 관련 설정](https://docs.spring.io/spring-cloud-config/docs/current/reference/html/)
+
+5.2.3 서비스의 구성 파일 설정
+
+스프링 Boot 2.4 이후에는 bootstarp.yml을 사용하려면 아래와 같이 DI 명시가 필요(Valut 관련은 추가 확인 필요)
+
+ApplciationContext가 로드 될 때 bootstrap을 로드 하지 않는다고 함
+
+``` bash
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-bootstrap</artifactId>
+</dependency>
+
+implementation("org.springframework.cloud:spring-cloud-starter-bootstrap")
+```
+
+bootstap.yml -> application.yml 순서로 로딩이 됩니다.
+
+목적
+
+- bootstap.yml: 초기화 및 외부 구성 서버 설정(uri, 약간의 encryption/decryption 정보)
+- application.yml: 애플리케이션의 일반 설정
+
+![image](./docs/images/chapter5/image01.png)
+
+참조 링크
+
+- [스프링 2.4 이후 deprecatted 된 이유](https://stackoverflow.com/questions/64994034/bootstrap-yml-configuration-not-processed-anymore-with-spring-cloud-2020-0)
+- [스프링 부트에서 application.yml이나 bootstrap.yml 속성의 차이](https://stackoverflow.com/questions/32997352/what-is-the-difference-between-putting-a-property-on-application-yml-or-bootstra)
+
+5.3 스프링 클라우드 컨피그와 스프링 부트 클라이언트 통합
+
 
 </details>
