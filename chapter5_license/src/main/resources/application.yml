@@ -10,6 +10,9 @@ spring:
     show-sql: true
 
 ## 로깅 설정 (선택 사항)
-#logging:
-#  level:
-#    org.hibernate.SQL: DEBUG
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+
+server:
+  port: 8080

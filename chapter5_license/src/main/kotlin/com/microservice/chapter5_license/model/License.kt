@@ -17,16 +17,16 @@ data class License(
     var description: String? = null,
 
     @Column(name = "organization_id", nullable = false)
-    var organizationId: String,
+    var organizationId: String = "",
 
     @Column(name = "product_name", nullable = false)
-    var productName: String,
+    var productName: String = "",
 
     @Column(name = "license_type", nullable = false)
-    var licenseType: String,
+    var licenseType: String = "",
 
     @Column(name = "comment")
-    var comment: String? = null,
+    var comment: String = "",
 ) : RepresentationModel<License>() {
 
     fun withComment(comment: String): License {

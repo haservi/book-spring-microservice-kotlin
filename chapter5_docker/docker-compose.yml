@@ -1,5 +1,6 @@
 version: '2.1'
 services:
+
   database:
     image: postgres:latest
     ports:
@@ -34,25 +35,25 @@ services:
         aliases:
           - "configserver"
 
-#  licensingservice:
-#    build:
-#      context: ../chapter5_license
-#      dockerfile: Dockerfile
-#    environment:
-#      PROFILE: "dev"
-#      CONFIGSERVER_URI: "http://configserver:8071"
-#      CONFIGSERVER_PORT: "8071"
-#      DATABASESERVER_PORT: "5432"
-#      ENCRYPT_KEY: "fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo"
-#    depends_on:
-#      database:
-#        condition: service_healthy
-#      configserver:
-#        condition: service_started
-#    ports:
-#      - "8080:8080"
-#    networks:
-#      - backend
+  licensingservice:
+    build:
+      context: ../chapter5_license
+      dockerfile: Dockerfile
+    environment:
+      PROFILE: "dev"
+      CONFIGSERVER_URI: "http://configserver:8071"
+      CONFIGSERVER_PORT: "8071"
+      DATABASESERVER_PORT: "5432"
+      ENCRYPT_KEY: "fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
 
 networks:
   backend:

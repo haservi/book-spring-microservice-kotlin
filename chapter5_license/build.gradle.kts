@@ -35,9 +35,6 @@ dependencies {
     implementation("org.springframework.hateoas:spring-hateoas:2.3.3")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
     implementation("org.springframework.boot:spring-boot-starter-actuator:3.3.4")
-    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-rsa
-    implementation("org.springframework.security:spring-security-rsa:1.1.5")
-
 }
 
 dependencyManagement {
