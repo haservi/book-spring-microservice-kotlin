@@ -2,16 +2,14 @@ spring:
   application:
     name: config-server
   profiles:
-    active: native
+    active: git
   cloud:
     config:
       server:
         encrypt.enabled: false
         git:
-          uri: https://github.com/haservi/book-spring-microservice-kotlin/tree/main/chapter5_configserver/src/main/resources/config
+          uri: https://github.com/haservi/config.git
           searchPaths: licensingservice
-#        native:
-#          search-locations: classpath:/config
 
 server:
   port: 8071
