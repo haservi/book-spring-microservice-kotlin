@@ -6,8 +6,6 @@
 
 - [스프링 마이크로서비스 코딩 공작소](#스프링-마이크로서비스-코딩-공작소)
   - [환경 및 설정](#환경-및-설정)
-  - [코드 실습](#코드-실습)
-    - [Chapter1](#chapter1)
   - [도서 챕터별 정리](#도서-챕터별-정리)
     - [1장 스프링, 클라우드와 만나다](#1장-스프링-클라우드와-만나다)
     - [2장 스프링 클라우드와 함께 마이크로서비스 세계 탐험](#2장-스프링-클라우드와-함께-마이크로서비스-세계-탐험)
@@ -31,12 +29,6 @@ API 테스트
   해당 [import 파일](./docs/api/Book%20Spring%20Microservice%20API.postman_collection.json) 을 이용하여 API 동작 확인을 할 수 있습니다.
 
 docs 폴더의 `Book Spring Microservice API.postman_collection.json` 파일을 Postman에 import를 하여 API 테스트를 하면 쉽게 할 수 있습니다.
-
-## 코드 실습
-
-### [Chapter1](https://github.com/haservi/book-spring-microservice-kotlin/tree/main/chapter1)
-
-기본적인 API 동작을 확인할 수 있습니다. 스프링 Boot를 이용하여 REST API 호출부를 실습합니다.
 
 ## 도서 챕터별 정리
 
@@ -722,9 +714,33 @@ Dockerfile의 주요 명령어
 
 5.1.1 구성 관리 아키텍처
 
+구성 관리는 부트스트래핑 단계에서 발생합니다.
+
+![image](./docs/images/chapter5/image02.png)
+
+5.1.2 구현 솔루션 선택
+
+구성 관리 시스템 구현을 위한 오픈 소스 프로젝트 종류
+
+- etcd: 서비스 디스커버리와 키-값 관리에 사용
+- Eureka: 서비스 디스커버리와 키-값 관리에 사용(유연하지만 공수가 듬)
+- Consul: etcd와 유레카와 유사하지만 분산 컴퓨팅 모델에 다른 알고리즘을 사용
+- Apache Zookeeper: 주로 키-값 데이터를 액세스하는 구성 관리 솔루션으로 사용(사용하기 복잡)
+- Spring Cloud Config: 오픈 소스 프로젝트로 다양한 백엔드와 함께 전반적인 구성 관리 솔루션 제공
+- 하시코프 볼트(HashiCorp Vault): 비밀 관리 및 데이터 암호화 솔루션
+
+Spring Cloud Config 특징
+
+- 스프링 클라우드 구성 서버는 설치와 사용이 쉬움
+- 스프링 부트와 밀접하게 통합되어 있어 간단한 애너테이션을 사용하여 애플리케이션의 모든 구성 데이터를 읽어올 수 있음
+- 구성 데이터를 저장하는 많은 백엔드를 지원
+- 깃 소스 제어 플랫폼이나 하시코프볼트와 바로 통합 가능
+
 5.2 스프링 클라우드 컨피그 서버 구축
 
-스프링 컨피그 서버 프로젝트 생성
+스프링 컨피그 서버 프로젝트를 생성합니다.
+
+[chapter5 학습 코드](https://github.com/haservi/book-spring-microservice-kotlin/tree/main/chapter5_configserver)
 
 5.2.1 스프링 클라우드 컨피그 부트스트랩 클래스 설정
 
@@ -732,24 +748,24 @@ Dockerfile의 주요 명령어
 
 5.2.2 스프링 클라우드 컨피그 서버에 파일 시스템 사용
 
-스프링 클라우드 native: 클라우드 컨피그 서버용으로만 생성한 프로파일이며, 구성 파일을 클래스 패스나 파일 시스템에서 검색하고 읽도록 지시하는 프로파일임
+스프링 클라우드 native: 클라우드 컨피그 서버용으로만 생성한 프로파일이며, 구성 파일을 클래스 패스나 파일 시스템에서 검색하고 읽도록 지시하는 프로파일입니다.
 
 spring.cloud.config.server 종류
 
-- native: 로컬 파일 시스템에서 파일 검색.
-- git: Git 리포지토리에서 파일 검색.
-- jdbc: 데이터베이스에서 파일 검색.
-- vault: HashiCorp Vault에서 비밀 값 검색.
-- consul: Consul에서 구성 값 검색.
-- zookeeper: Zookeeper에서 구성 값 검색.
+- native: 로컬 파일 시스템에서 파일 검색
+- git: Git 리포지토리에서 파일 검색
+- jdbc: 데이터베이스에서 파일 검색
+- vault: HashiCorp Vault에서 비밀 값 검색
+- consul: Consul에서 구성 값 검색
+- zookeeper: Zookeeper에서 구성 값 검색
 
-참조: [config 관련 설정](https://docs.spring.io/spring-cloud-config/docs/current/reference/html/)
+참조: [config 관련 설정 공식 문서](https://docs.spring.io/spring-cloud-config/docs/current/reference/html/)
 
 5.2.3 서비스의 구성 파일 설정
 
 스프링 Boot 2.4 이후에는 bootstarp.yml을 사용하려면 아래와 같이 DI 명시가 필요(Valut 관련은 추가 확인 필요)
 
-ApplciationContext가 로드 될 때 bootstrap을 로드 하지 않는다고 함
+ApplciationContext가 로드 될 때 bootstrap을 로드 하지 않는다고 합니다.
 
 ``` bash
 <dependency>
@@ -760,9 +776,7 @@ ApplciationContext가 로드 될 때 bootstrap을 로드 하지 않는다고 함
 implementation("org.springframework.cloud:spring-cloud-starter-bootstrap")
 ```
 
-bootstap.yml -> application.yml 순서로 로딩이 됩니다.
-
-목적
+스프링 클라우드 에서는 bootstap.yml -> application.yml 순서로 로딩이 되며, 아래와 같이 역할에 맞게 구성 정보를 넣는게 좋습니다.
 
 - bootstap.yml: 초기화 및 외부 구성 서버 설정(uri, 약간의 encryption/decryption 정보)
 - application.yml: 애플리케이션의 일반 설정
@@ -776,5 +790,64 @@ bootstap.yml -> application.yml 순서로 로딩이 됩니다.
 
 5.3 스프링 클라우드 컨피그와 스프링 부트 클라이언트 통합
 
+라이선신 서비스 정보 검색 순서
+
+- 라이선싱 서비스 부팅 시 스프링 프로파일에 설정된 엔드포인트로 스프링 클라우드 컨피그 서비스와 통신
+- 스프링 클라우드 컨피그 서비스는 구성된 백엔드 저장소를 사용하여 URI 매개변수로 전달된 스프링 프로파일에 해당하는 구성 정보를 검색
+- 적절한 프로퍼티 값이 라이선싱 서비스로 다시 전달되면 스프링 부트 프레임워크는 이 값을 애플리케이션의 적절한 부분에 주입
+
+5.3.1 라이선싱 서비스의 스프링 클라우드 컨피그 서비스 의존성 설정
+
+라이선싱 서비스를 위한 의존성 추가합니다.
+
+- spring-cloud-starter-config: 스프링 클라우드 컨피그에 필요한 의존성 설정
+- spring-boot-starter-data-jpa: jpa 의존성 설정
+- postgresql: postgres 드라이버 의존성 설정
+
+5.3.2 스프링 클라우드 컨피그 사용을 위한 라이선싱 서비스 구성
+
+![img.png](docs/images/chapter5/image03.png)
+
+- name: 라이선싱 서비스의 이름을 지정하여 스프링 클라우드 컨피그 클라이언트는 어떤 서비스가 검색되는지 알 수 있음
+- active: 서비스가 실행될 프로파일 지정
+- config.uri: 스프링 클라우드 컨피그 서버의 위치 지정
+
+![img.png](docs/images/chapter5/image04.png)
+
+위와 같이 docker-compose.yml을 설정하여 실제로 라이선싱 서비스가 스프링 클라우드 컨피그를 통해 DB 접속 정보를 제공 받는지 확인합니다.
+
+5.3.3 스프링 클라우드 컨피그 서버를 사용하여 데이터 소스 연결
+
+docker-compose로 실행한 라이선싱 서비스가 스프링 클라우드 컨피그 서버에서 제공한 DB 정보를 제공 받아 데이터를 넣는지 실습합니다.
+
+![img.png](docs/images/chapter5/image05.png)
+
+5.3.4 @ConfigurationProperties를 사용하여 프로퍼티 직접 읽기
+
+라이선싱 서비스에서 bootstrap.yml 의 active에 따라 설정값이 바뀌는지 확인합니다.
+
+![img.png](docs/images/chapter5/image06.png)
+
+5.3.5 스프링 클라우드 컨피그 서버를 사용하여 프러퍼티 갱신
+
+@RefreshScope는 Spring Cloud Config에서 사용하는 어노테이션으로, Spring Bean이 동적으로 변경 가능한 속성을 갖도록 지원하는 기능입니다.
+
+주로 Spring Cloud Config와 Spring Actuator의 /refresh 엔드포인트와 함께 사용됩니다.
+
+http://localhost:8080/actuator/refresh 호출 시 config 서버에서 설정값을 다시 읽어옴
+
+![img.png](docs/images/chapter5/image07.png)
+
+5.3.6 깃과 함께 스프링 클라우드 컨피그 서버 사용
+
+스프링 클라우드 컨피그 서버는 백엔드 저장소로 사용하는 것은 클라우드 기반 애플리케이션에 실용적이지 못합니다.
+
+- 개발팀이 컨피그 서버의 모든 인스턴스에 마운트되는 공유 파일 시스템을 설정하고 관리해야 함
+- 컨피그 서버는 애플리케이션 구성 프로퍼티를 호스팅하는데 다양한 백엔드 저장소와 통합될 수 있음
+
+깃과 함께 스프링 클라우드 컨피그 사용 시 장점
+
+- 구성 관리할 프로퍼티를 소스 제어하에 두는 이점을 얻을 수 있음
+- 프로퍼티 관리 파일의 배포를 빌드 및 배포 파이프라인에 쉽게 통합할 수 있음
 
 </details>
