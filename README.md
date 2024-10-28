@@ -689,7 +689,7 @@ Dockerfile의 주요 명령어
 
 ### 5장 스프링 클라우드 컨피그 서버로 구성 관리
 
-<details open>
+<details>
 <summary>내용 정리(펼치기)</summary>
 
 애플리케이션 구성 정보와 코드를 분리하는 것이 중요하며, 아래와 같이 구성 정보를 분리를 고려해야 합니다.
@@ -806,13 +806,13 @@ implementation("org.springframework.cloud:spring-cloud-starter-bootstrap")
 
 5.3.2 스프링 클라우드 컨피그 사용을 위한 라이선싱 서비스 구성
 
-![img.png](docs/images/chapter5/image03.png)
+![image](docs/images/chapter5/image03.png)
 
 - name: 라이선싱 서비스의 이름을 지정하여 스프링 클라우드 컨피그 클라이언트는 어떤 서비스가 검색되는지 알 수 있음
 - active: 서비스가 실행될 프로파일 지정
 - config.uri: 스프링 클라우드 컨피그 서버의 위치 지정
 
-![img.png](docs/images/chapter5/image04.png)
+![image](docs/images/chapter5/image04.png)
 
 위와 같이 docker-compose.yml을 설정하여 실제로 라이선싱 서비스가 스프링 클라우드 컨피그를 통해 DB 접속 정보를 제공 받는지 확인합니다.
 
@@ -820,13 +820,13 @@ implementation("org.springframework.cloud:spring-cloud-starter-bootstrap")
 
 docker-compose로 실행한 라이선싱 서비스가 스프링 클라우드 컨피그 서버에서 제공한 DB 정보를 제공 받아 데이터를 넣는지 실습합니다.
 
-![img.png](docs/images/chapter5/image05.png)
+![image](docs/images/chapter5/image05.png)
 
 5.3.4 @ConfigurationProperties를 사용하여 프로퍼티 직접 읽기
 
 라이선싱 서비스에서 bootstrap.yml 의 active에 따라 설정값이 바뀌는지 확인합니다.
 
-![img.png](docs/images/chapter5/image06.png)
+![image](docs/images/chapter5/image06.png)
 
 5.3.5 스프링 클라우드 컨피그 서버를 사용하여 프러퍼티 갱신
 
@@ -836,7 +836,7 @@ docker-compose로 실행한 라이선싱 서비스가 스프링 클라우드 컨
 
 http://localhost:8080/actuator/refresh 호출 시 config 서버에서 설정값을 다시 읽어옴
 
-![img.png](docs/images/chapter5/image07.png)
+![image](docs/images/chapter5/image07.png)
 
 5.3.6 깃과 함께 스프링 클라우드 컨피그 서버 사용
 
@@ -849,5 +849,80 @@ http://localhost:8080/actuator/refresh 호출 시 config 서버에서 설정값�
 
 - 구성 관리할 프로퍼티를 소스 제어하에 두는 이점을 얻을 수 있음
 - 프로퍼티 관리 파일의 배포를 빌드 및 배포 파이프라인에 쉽게 통합할 수 있음
+
+5.3.7 볼트와 스프링 클라우드 컨피그 서비스 통합
+
+하시코프 볼트는 시크릿에 안전하게 접근할 수 있는 도구이며 패스워드, 인증서, API 키등 접근을 제한하거나 제한하려는 어떤 정보로도 시크릿을 정의할 수 있습니다.
+
+스프링 컨피그 서비스에서 볼트를 구성하려면 볼트 프로파일을 추가해야 하며, 볼트를 사용하면 마이크로서비스의 애플리케이션 프로퍼티를 안전하게 저장할 수 있습니다.
+
+볼트 컨테이너 생성 방법
+
+```bash
+docker run -d -p 8200:8200 --name valut -e 'VAULT_DEV_ROOT_TOKEN_ID=myroot -e 'VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200' valut
+```
+
+- VAULT_DEV_ROOT_TOKEN_ID: 루트 토큰 ID 설정, 루트 토큰은 볼트 구성을 시작하는 초기 엑세스 토큰
+- VAULT_DEV_LISTEN_ADDRESS: 개발 서버의 IP 주소와 포트를 설정. 기본값은 0.0.0.0:8200
+
+5.3.8 볼트 UI
+
+볼트는 시크릿 생성 과정을 도와주는 통합 인터페이스를 제공합니다.
+
+docker-compose를 통해 vault 아래와 같이 이미지를 설정합니다.
+
+![image](docs/images/chapter5/image09.png)
+
+config server의 Dockerfile 정보입니다.
+
+![image](docs/images/chapter5/image10.png)
+
+이렇게 설정 후 Volt UI에서 아래와 같이 미리 지정한 TokenId(myroot)로 로그인합니다.
+
+![image](docs/images/chapter5/image11.png)
+
+KV(Key-Value)로 시크릿 엔진을 생성합니다.
+![image](docs/images/chapter5/image12_1.png)
+![image](docs/images/chapter5/image12_2.png)
+
+아래와 같이 시크릿을 생성하면 config-server에서 해당 시크릿을 확인할 수 있습니다.
+![image](docs/images/chapter5/image13.png)
+![image](docs/images/chapter5/image14.png)
+
+5.4 중요한 구성 정보 보호
+
+프로퍼티 안의 중요한 자격 증명을 평문으로 소스 코드 저장소에 저장하는 것은 매우 나쁜 관행입니다.
+
+스프링 클라우드 컨피그는 중요한 프로퍼티를 쉽게 암호화할 수 있는 기능을 제공하며, 대칭(공유 시크릿) 및 비대칭 암호화(공개/비공개) 키 사용을 지원합니다.
+
+5.4.1 대칭 암호화 키 설정
+
+스프링 클라우드 컨피그의 bootstrap.yml 파일에 아래와 같이 설정하거나 ENCRYPT_KEY 라는 OS 환경 변수로 프로퍼티 암호화 복호화 기능을 사용할 수 있습니다.
+
+```yaml
+# bootstrap.yml
+
+encrypt:
+  key: 대칭키(12문자 이상이며 불규칙 문자열이 이상적)
+
+# docker-compose.yml
+
+environment:
+  ENCRYPT_KEY: "fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo"
+```
+
+5.4.2 프로퍼티 암호화와 복호화
+
+스프링 클라우드 컨피그 인스턴스를 실행하면 기존 설정한 시크릿키를 감지하고 /encrypt와 /decrypt 두 개의 엔드포인트를 사용할 수 있습니다.
+
+아래와 같이 암호화 및 복호화가 가능합니다.
+
+![image](docs/images/chapter5/image15.png)
+
+암호화된 값은 프로퍼티에 {cipher}를 붙여서 아래와 같이 처리할 수 있습니다.
+
+```properties
+spring.datasource.password={cipher}f4609209a3e75d8ac79a5e3063ce151c2cd28aa431170bb06974b9421e807b6a
+```
 
 </details>

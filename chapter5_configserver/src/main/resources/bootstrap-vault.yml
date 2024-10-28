@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        vault:
+          port: 8200
+          host: 127.0.0.1
+          kvVersion: 2
+          backend: haservi
+          profile-separator: /
+
+server:
+  port: 8071
+
+#Enable all Spring Boot Actuator endpoints.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

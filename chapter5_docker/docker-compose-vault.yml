@@ -1,0 +1,23 @@
+version: '3'
+services:
+
+  vault:
+    image: vault:1.13.3
+    container_name: vault
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: myroot
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    ports:
+      - "8200:8200"
+    command: vault server -dev
+
+  configserver:
+    build:
+      context: ../chapter5_configserver
+      dockerfile: Dockerfile.Vault
+    ports:
+      - "8071:8071"
+    environment:
+      ENCRYPT_KEY: "fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo"
+      SPRING_CLOUD_CONFIG_SERVER_VAULT_HOST: vault
+      SPRING_CLOUD_CONFIG_SERVER_VAULT_PORT: 8200
