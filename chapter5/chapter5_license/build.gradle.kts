@@ -31,6 +31,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
     // https://mvnrepository.com/artifact/org.springframework.hateoas/spring-hateoas
     implementation("org.springframework.hateoas:spring-hateoas:2.3.3")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
