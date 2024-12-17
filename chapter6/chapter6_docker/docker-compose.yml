@@ -1,0 +1,66 @@
+#version: '3.9'
+services:
+
+  #  vault-server:
+  #    image: vault:1.13.3
+  #    container_name: vault-server
+  #    environment:
+  #      VAULT_DEV_ROOT_TOKEN_ID: "haservi"
+  #      VAULT_ADDR: "http://127.0.0.1:8200"
+  #    ports:
+  #      - "8200:8200"
+  #    command: "vault server -dev"
+
+  config-server:
+    build:
+      context: ../chapter6_config_server
+      dockerfile: Dockerfile
+    ports:
+      - "8071:8071"
+    networks:
+      backend:
+        aliases:
+          - "config-server"
+
+  eureka-server:
+    build:
+      context: ../chapter6_eureka_server
+      dockerfile: Dockerfile
+    depends_on:
+      - config-server
+    ports:
+      - "8070:8070"
+    networks:
+      backend:
+        aliases:
+          - "eureka-server"
+
+#  backend1-service:
+#    build:
+#      context: ../chapter6_backend1
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - config-server
+#    environment:
+#      SPRING_PROFILES_ACTIVE: "dev"
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - backend
+#
+#  backend2-service:
+#    build:
+#      context: ../chapter6_backend2
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - config-server
+#    environment:
+#      SPRING_PROFILES_ACTIVE: "dev"
+#    ports:
+#      - "8081:8081"
+#    networks:
+#      - backend
+
+networks:
+  backend:
+    driver: bridge

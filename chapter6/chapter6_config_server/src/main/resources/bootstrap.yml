@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        encrypt:
+          enabled: true
+        native:
+          search-locations: classpath:/config
+
+encrypt:
+  key: rkswkdrhdwkdrhdwkdwkddmsRksrhdwkdwkddlek
+
+server:
+  port: 8071
+
+#Enable all Spring Boot Actuator endpoints.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
