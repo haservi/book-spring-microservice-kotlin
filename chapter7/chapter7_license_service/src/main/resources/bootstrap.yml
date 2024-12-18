@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: licensing-service
+  profiles:
+    active: dev
+  cloud:
+    config:
+      uri: http://localhost:8071
+
+management.endpoints.enabled-by-default: false
+management.endpoint.health:
+  enabled: true
+  show-details: always
+
+#
+#resilience4j.circuitbreaker:
+#  instances:
+#    license-service:
+#      registerHealthIndicator: true
+#      ringBufferSizeInClosedState: 5
+#      ringBufferSizeInHalfOpenState: 3
+#      waitDurationInOpenState: 10s
+#      failureRateThreshold: 50
+#      recordExceptions:
+#        - org.springframework.web.client.HttpServerErrorException
+#        - java.io.IOException
+#        - java.util.concurrent.TimeoutException
+#        - org.springframework.web.client.ResourceAccessException
+#    organization-service:
+#      registerHealthIndicator: true
+#      ringBufferSizeInClosedState: 6
+#      ringBufferSizeInHalfOpenState: 4
+#      waitDurationInOpenState: 20s
+#      failureRateThreshold: 60
+#
+#resilience4j.ratelimiter:
+#  instances:
+#    license-service:
+#      limitForPeriod: 5
+#      limitRefreshPeriod: 5000
+#      timeoutDuration: 1000ms
+#
+#resilience4j.retry:
+#  instances:
+#    retryLicenseService: # 적용할 서비스 이름
+#      maxRetryAttempts: 5 # 재시도 최대 횟수
+#      waitDuration: 10000 # 재시도 간 대기 시간
+#      retry-exceptions: # 재시도 대상 예외
+#        - java.util.concurrent.TimeoutException
+#
+#resilience4j.bulkhead:
+#  instances:
+#    bulkheadLicenseService:
+#      maxWaitDuration: 2ms # 스레드를 차단할 최대 시간(기본값은 0)
+#      maxConcurrentCalls: 20 # 최대 동시 호출 수(기본값은 25)
+#
+#resilience4j.thread-pool-bulkhead:
+#  instances:
+#    bulkheadLicenseService:
+#      maxThreadPoolSize: 1 # 스레드 풀에서 최대 스레드 수
+#      coreThreadPoolSize: 1 # 코어 스레드 풀 크기
+#      queueCapacity: 1 # 큐 용량
+#      keepAliveDuration: 20ms # 유휴 스레드가 종료되기 전 새 태스트를 기다리는 최대 시간(스레드 수가 코어 스레드 수보다 많을 때 발생함 기본값 20ms)

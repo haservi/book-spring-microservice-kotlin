@@ -1,0 +1,11 @@
+# Vault 이미지 기반
+FROM vault:1.13.3
+
+# 환경 변수 설정
+ENV VAULT_DEV_ROOT_TOKEN_ID=haservi
+ENV VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+
+# 노출할 포트
+EXPOSE 8200
+
+CMD ["vault", "server", "-dev"]

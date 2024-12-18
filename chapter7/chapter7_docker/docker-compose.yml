@@ -1,0 +1,61 @@
+version: '3.9'
+services:
+
+  database:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "ostock_dev"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/1-init.sql
+      - ./data.sql:/docker-entrypoint-initdb.d/2-data.sql
+    networks:
+      backend:
+        aliases:
+          - "database"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  #  vault-server:
+  #    image: vault:1.13.3
+  #    container_name: vault-server
+  #    environment:
+  #      VAULT_DEV_ROOT_TOKEN_ID: "haservi"
+  #      VAULT_ADDR: "http://127.0.0.1:8200"
+  #    ports:
+  #      - "8200:8200"
+  #    command: "vault server -dev"
+
+  config-server:
+    build:
+      context: ../chapter7_config_server
+      dockerfile: Dockerfile
+    ports:
+      - "8071:8071"
+    networks:
+      backend:
+        aliases:
+          - "config-server"
+
+  eureka-server:
+    build:
+      context: ../chapter7_eureka_server
+      dockerfile: Dockerfile
+    depends_on:
+      - config-server
+    ports:
+      - "8070:8070"
+    networks:
+      backend:
+        aliases:
+          - "eureka-server"
+
+networks:
+  backend:
+    driver: bridge
