@@ -1,0 +1,50 @@
+services:
+
+  database:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "ostock_dev"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/1-init.sql
+      - ./data.sql:/docker-entrypoint-initdb.d/2-data.sql
+    networks:
+      backend:
+        aliases:
+          - "database"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  config-server:
+    build:
+      context: ../chapter8_config_server
+      dockerfile: Dockerfile
+    ports:
+      - "8071:8071"
+    networks:
+      backend:
+        aliases:
+          - "config-server"
+
+  eureka-server:
+    build:
+      context: ../chapter8_eureka_server
+      dockerfile: Dockerfile
+    depends_on:
+      - config-server
+    ports:
+      - "8070:8070"
+    networks:
+      backend:
+        aliases:
+          - "eureka-server"
+
+networks:
+  backend:
+    driver: bridge
